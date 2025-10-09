@@ -7,16 +7,24 @@ redirect_from:
   - /about.html
 ---
 
-I am a first year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke). My research focuses on advancing probabilistic machine learning through **Bayesian inference** and **deep generative models**.
+I am a second year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke). My research focuses on **diffusion and flow-based generative models**, **Bayesian inference**, and **AI for Science** with applications in protein design.
 
-I'm interested in improving approximate inference by developing scalable and high-capacity variational inference methods using flow-based models. I'm also exploring deep generative models like Generative Flow Networks (GFlowNets) for scientific discovery. Additionally, I'm working on leveraging diffusion models for approximate inference and enhancing their training methodologies to push the boundaries of probabilistic machine learning.
+I'm interested in developing novel diffusion and flow-based generative models for probabilistic machine learning, with particular emphasis on improving approximate inference through scalable variational methods. I'm exploring how these models can be leveraged for scientific discovery, especially in protein design and other molecular applications. My work spans from theoretical foundations of Bayesian inference to practical applications of generative models in scientific domains.
 
-I am actively engaged in research with various groups, including the [DiffEqML](https://github.com/DiffEqML), where I have deepened my interest in probabilistic machine learning. Prior to joining UMass, I completed my Master's in Industrial & Systems Engineering at KAIST under the supervision of [Prof. Woo Chang Kim](https://felab.kaist.ac.kr/team.html) and earned my undergraduate degree at Yonsei University.
+Prior to joining UMass, I completed my Master's in Industrial & Systems Engineering at KAIST under the supervision of [Prof. Woo Chang Kim](https://felab.kaist.ac.kr/team.html) and earned my undergraduate degree at Yonsei University.
 
 
 <!-- <span style="color:red"> [News] </span>
 news -->
 ## Selected Publications
+[Model Informed Flows for Bayesian Inference of Probabilistic Programs](https://arxiv.org/pdf/2505.24243)\
+**Joohwan Ko**, Justin Domke\
+39th Annual Conference on Neural Information Processing Systems (**NeurIPS 2025**)
+
+[Latent Target Score Matching, with an application to Simulation-Based Inference]()\
+**Joohwan Ko**, Tomas Geffner\
+39th Annual Conference on Neural Information Processing Systems (**NeurIPS**) Workshop MLPS, 2025
+
 [Learning to scale logits for temperature-conditional GFlowNets](https://arxiv.org/pdf/2310.02823)\
 Minsu Kim\*, **Joohwan Ko**\*, Taeyoung Yun\*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, 
 Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio\
