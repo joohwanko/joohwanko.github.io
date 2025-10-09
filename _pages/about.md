@@ -9,7 +9,7 @@ redirect_from:
 
 I am a second year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke). My research focuses on **diffusion and flow-based generative models**, **Bayesian inference**, and **AI for Science** with applications in protein design.
 
-I'm interested in developing novel diffusion and flow-based generative models for probabilistic machine learning, with particular emphasis on improving approximate inference through scalable variational methods. I'm exploring how these models can be leveraged for scientific discovery, especially in protein design and other molecular applications. My work spans from theoretical foundations of Bayesian inference to practical applications of generative models in scientific domains.
+I'm interested in developing novel diffusion and flow-based generative models for probabilistic machine learning, with particular emphasis on improving approximate inference through scalable variational methods. I'm exploring how these models can be leveraged for scientific discovery, especially in protein design and other molecular applications. My work spans from theoretical foundations of Bayesian inference to practical applications of generative models in scientific domains. During summer 2025, I worked as an AI Research Intern at Flagship Pioneering, developing protein binder design methods.
 
 Prior to joining UMass, I completed my Master's in Industrial & Systems Engineering at KAIST under the supervision of [Prof. Woo Chang Kim](https://felab.kaist.ac.kr/team.html) and earned my undergraduate degree at Yonsei University.
 
