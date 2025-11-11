@@ -25,6 +25,10 @@ news -->
 **Joohwan Ko**, Tomas Geffner\
 39th Annual Conference on Neural Information Processing Systems (**NeurIPS**) Workshop MLPS, 2025
 
+[Relaxed Sequence Sampling for Diverse Protein Design](https://arxiv.org/pdf/2510.23786)\
+**Joohwan Ko**, Aristofanis	Rontogiannis, Yih-En Andrew	Ban, Axel Elaldi, Nicholas	Franklin\
+Machine Learning in Structural Biology (**MLSB 2025**)
+
 [Learning to scale logits for temperature-conditional GFlowNets](https://arxiv.org/pdf/2310.02823)\
 Minsu Kim\*, **Joohwan Ko**\*, Taeyoung Yun\*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, 
 Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio\
