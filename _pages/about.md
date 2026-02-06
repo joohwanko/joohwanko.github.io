@@ -21,7 +21,7 @@ news -->
 **Joohwan Ko**, Justin Domke\
 39th Annual Conference on Neural Information Processing Systems (**NeurIPS 2025**)
 
-[Latent Target Score Matching, with an application to Simulation-Based Inference](/files/Nips_MLPS.pdf)\
+[Latent Target Score Matching, with an application to Simulation-Based Inference](https://ml4physicalsciences.github.io/2025/files/NeurIPS_ML4PS_2025_8.pdf)\
 **Joohwan Ko**, Tomas Geffner\
 39th Annual Conference on Neural Information Processing Systems (**NeurIPS**) Workshop MLPS, 2025
 
