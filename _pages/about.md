@@ -7,16 +7,21 @@ redirect_from:
   - /about.html
 ---
 
-I am a second year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke). My research focuses on **diffusion and flow-based generative models**, **Bayesian inference**, and **AI for Science** with applications in protein design.
+I am a second-year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke).
 
-I'm interested in developing novel diffusion and flow-based generative models for probabilistic machine learning, with particular emphasis on improving approximate inference through scalable variational methods. I'm exploring how these models can be leveraged for scientific discovery, especially in protein design and other molecular applications. My work spans from theoretical foundations of Bayesian inference to practical applications of generative models in scientific domains. During summer 2025, I worked as an AI Research Intern at Flagship Pioneering, developing protein binder design methods.
+My research aims to make foundation-model systems more reliable under uncertainty. I develop probabilistic inference and optimization methods, with a focus on amortized Bayesian posterior inference, generative models, and AI for Science. I am especially interested in building general-purpose inference models that can reason over probabilistic model structure and produce fast, calibrated uncertainty estimates across model families.
 
-Prior to joining UMass, I completed my Master's in Industrial & Systems Engineering at KAIST under the supervision of [Prof. Woo Chang Kim](https://felab.kaist.ac.kr/team.html) and earned my undergraduate degree at Yonsei University.
+During summer 2025, I interned at Flagship Pioneering on protein design. This summer, I will intern at the Flatiron Institute, working on LLM optimization.
 
+Prior to joining UMass, I completed my Master's at KAIST under the supervision of [Prof. Woo Chang Kim](https://felab.kaist.ac.kr/team.html) and earned my undergraduate degree at Yonsei University.
 
 <!-- <span style="color:red"> [News] </span>
 news -->
 ## Selected Publications
+[Amortized Factor Inference Networks for Posterior Inference](https://arxiv.org/pdf/2605.26419)\
+**Joohwan Ko**, Justin Domke\
+*Preprint*
+
 [Model Informed Flows for Bayesian Inference of Probabilistic Programs](https://arxiv.org/pdf/2505.24243)\
 **Joohwan Ko**, Justin Domke\
 39th Annual Conference on Neural Information Processing Systems (**NeurIPS 2025**)
