@@ -2,63 +2,42 @@
 permalink: /
 title: "About me"
 author_profile: true
-redirect_from: 
+redirect_from:
   - /about/
   - /about.html
 ---
 
-I am a second-year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke).
+I am a third-year Ph.D. student in Computer Science at the [University of Massachusetts Amherst](https://www.cics.umass.edu/), advised by [Prof. Justin Domke](https://www.cics.umass.edu/about/directory/justin-domke).
 
-My research aims to make foundation-model systems more reliable under uncertainty. I develop probabilistic inference and optimization methods, with a focus on amortized Bayesian posterior inference, generative models, and AI for Science. I am especially interested in building general-purpose inference models that can reason over probabilistic model structure and produce fast, calibrated uncertainty estimates across model families.
+My research lies at the intersection of **probabilistic machine learning and stochastic optimization**. I develop scalable methods for **approximate inference and large-scale learning**, with interests spanning Bayesian inference, generative modeling, and optimization for modern deep learning systems.
 
-During summer 2025, I interned at Flagship Pioneering on protein design. This summer, I will intern at the Flatiron Institute, working on LLM optimization.
+I am currently a Guest Researcher at the [Flatiron Institute](https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/), where I work on optimization for large-scale model training, including **LLM pre-training**. Previously, I interned at the Flatiron Institute, working on optimization methods for deep learning and **Mixture-of-Experts models**, and at [Flagship Pioneering](https://www.flagshippioneering.com/), where I worked on sampling-based protein design.
 
-Prior to joining UMass, I completed my Master's at KAIST under the supervision of [Prof. Woo Chang Kim](https://felab.kaist.ac.kr/team.html) and earned my undergraduate degree at Yonsei University.
+Prior to joining UMass, I completed my Master's at KAIST and earned my undergraduate degree at Yonsei University.
 
-<!-- <span style="color:red"> [News] </span>
-news -->
-## Selected Publications
-[Amortized Factor Inference Networks for Posterior Inference](https://arxiv.org/pdf/2605.26419)\
-**Joohwan Ko**, Justin Domke\
-*Preprint*
+## Selected Publications ([full list](https://scholar.google.com/citations?user=WuSwS8YAAAAJ))
 
-[Model Informed Flows for Bayesian Inference of Probabilistic Programs](https://arxiv.org/pdf/2505.24243)\
-**Joohwan Ko**, Justin Domke\
-39th Annual Conference on Neural Information Processing Systems (**NeurIPS 2025**)
+**[SoftServe: A Scalable Quasi-Newton Method for Deep Learning](https://joohwanko.com/)**  
+**Joohwan Ko**, Tetiana Parshakova, Diana Cai, Robert M. Gower  
+*Preprint, 2026*
 
-[Latent Target Score Matching, with an application to Simulation-Based Inference](https://ml4physicalsciences.github.io/2025/files/NeurIPS_ML4PS_2025_8.pdf)\
-**Joohwan Ko**, Tomas Geffner\
-39th Annual Conference on Neural Information Processing Systems (**NeurIPS**) Workshop MLPS, 2025
+**[Amortized Factor Inference Networks for Posterior Inference](https://arxiv.org/pdf/2605.26419)**  
+**Joohwan Ko**, Justin Domke  
+*Preprint, 2026*
 
-[Relaxed Sequence Sampling for Diverse Protein Design](https://arxiv.org/pdf/2510.23786)\
-**Joohwan Ko**, Aristofanis	Rontogiannis, Yih-En Andrew	Ban, Axel Elaldi, Nicholas	Franklin\
-Machine Learning in Structural Biology (**MLSB 2025**)
+**[Model Informed Flows for Bayesian Inference](https://arxiv.org/pdf/2505.24243)**  
+**Joohwan Ko**, Justin Domke  
+*NeurIPS 2025*
 
-[Learning to scale logits for temperature-conditional GFlowNets](https://arxiv.org/pdf/2310.02823)\
-Minsu Kim\*, **Joohwan Ko**\*, Taeyoung Yun\*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, 
-Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio\
-41th International Conference on Machine Learning (**ICML 2024**)
+**[Latent Target Score Matching, with an Application to Simulation-Based Inference](https://joohwanko.com/files/Nips_MLPS.pdf)**  
+**Joohwan Ko**, Tomas Geffner  
+*NeurIPS MLPS Workshop, 2025*
 
-[Provably Scalable Black-Box Variational Inference with Structured Variational Families](https://arxiv.org/pdf/2401.10989)\
-**Joohwan Ko**\*, Kyurae Kim\*, Woo Chang Kim, Jacob R. Gardner.\
-41th International Conference on Machine Learning (**ICML 2024**)
+**[Learning to Scale Logits for Temperature-Conditional GFlowNets](https://arxiv.org/pdf/2310.02823.pdf)**  
+Minsu Kim*, **Joohwan Ko***, Taeyoung Yun*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio  
+*ICML 2024*
 
-[Demystifying SGD with Doubly Stochastic Gradients](https://arxiv.org/pdf/2406.00920)\
-Kyurae Kim, **Joohwan Ko**, Yian Ma, Jacob R. Gardner\
-41th International Conference on Machine Learning (**ICML 2024**)
-
-[Layer-Adaptive State Pruning for Deep State Space Models](https://arxiv.org/pdf/2411.02824)\
-Minseon Gwak, Seongrok Moon, **Joohwan Ko**, PooGyeon Park.\
-38th Annual Conference on Neural Information Processing Systems (**NeurIPS 2024**)
-
-[Enhancing Topological Dependencies in Spatio-Temporal Graphs with Cycle Message Passing Blocks](https://openreview.net/pdf?id=LzTlTZZIN5)\
-Minho Lee*, Yun Young Choi*, Sun Woo Park, Seunghwan Lee, **Joohwan Ko**, Jaeyoung Hong\
-The Third Learning on Graphs Conference (**LOG 2024**)
-
-[Multilevel approach to efficient gradient calculation in stochastic systems
-](https://openreview.net/pdf?id=SGmR37uf2s)\
-**Joohwan Ko**, Michael Poli, Stefano Massaroli, Woo Chang Kim\
-11th International Conference on Learning Representations Workshop on Physics for Machine Learning (**ICLR 2023 Workshop**)
-
-( * denotes equal contribution)
-
+**[Provably Scalable Black-Box Variational Inference with Structured Variational Families](https://arxiv.org/pdf/2401.10989)**  
+**Joohwan Ko***, Kyurae Kim*, Woo Chang Kim, Jacob R. Gardner  
+*ICML 2024*
+\* denotes equal contribution.
