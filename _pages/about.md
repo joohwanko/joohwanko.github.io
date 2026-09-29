@@ -34,10 +34,11 @@ Prior to joining UMass, I completed my Master's at KAIST and earned my undergrad
 *NeurIPS MLPS Workshop, 2025*
 
 **[Learning to Scale Logits for Temperature-Conditional GFlowNets](https://arxiv.org/pdf/2310.02823.pdf)**  
-Minsu Kim*, **Joohwan Ko***, Taeyoung Yun*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio  
+Minsu Kim\*, **Joohwan Ko**\*, Taeyoung Yun\*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio  
 *ICML 2024*
 
 **[Provably Scalable Black-Box Variational Inference with Structured Variational Families](https://arxiv.org/pdf/2401.10989)**  
-**Joohwan Ko***, Kyurae Kim*, Woo Chang Kim, Jacob R. Gardner  
+**Joohwan Ko**\*, Kyurae Kim\*, Woo Chang Kim, Jacob R. Gardner  
 *ICML 2024*
-\* denotes equal contribution.
+
+(\* denotes equal contribution)
