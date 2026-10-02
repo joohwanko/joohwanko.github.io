@@ -17,7 +17,7 @@ Prior to joining UMass, I completed my Master's at KAIST and earned my undergrad
 
 ## Selected Publications ([full list](https://scholar.google.com/citations?user=WuSwS8YAAAAJ))
 
-**[SoftServe: A Scalable Quasi-Newton Method for Deep Learning](https://joohwanko.com/)**  
+**[SoftServe: A Scalable Quasi-Newton Method for Deep Learning](https://arxiv.org/pdf/2610.02182)**  
 **Joohwan Ko**, Tetiana Parshakova, Diana Cai, Robert M. Gower  
 *Preprint, 2026*
 
