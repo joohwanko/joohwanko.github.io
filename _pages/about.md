@@ -17,27 +17,27 @@ Prior to joining UMass, I completed my Master's at KAIST and earned my undergrad
 
 ## Selected Publications ([full list](https://scholar.google.com/citations?user=WuSwS8YAAAAJ))
 
-**[SoftServe: A Scalable Quasi-Newton Method for Deep Learning](https://arxiv.org/pdf/2610.02182)**  
+**SoftServe: A Scalable Quasi-Newton Method for Deep Learning** \[[pdf](https://arxiv.org/pdf/2610.02182), [code](https://github.com/joohwanko/SoftServe), [blog](/softserve/)\]  
 **Joohwan Ko**, Tetiana Parshakova, Diana Cai, Robert M. Gower  
-*Preprint, 2026* · [Blog post](/softserve/)
+*Preprint, 2026*
 
-**[Amortized Factor Inference Networks for Posterior Inference](https://arxiv.org/pdf/2605.26419)**  
+**Amortized Factor Inference Networks for Posterior Inference** \[[pdf](https://arxiv.org/pdf/2605.26419), [code](https://github.com/joohwanko/AFINs)\]  
 **Joohwan Ko**, Justin Domke  
 *Preprint, 2026*
 
-**[Model Informed Flows for Bayesian Inference](https://arxiv.org/pdf/2505.24243)**  
+**Model Informed Flows for Bayesian Inference** \[[pdf](https://arxiv.org/pdf/2505.24243), [code](https://github.com/joohwanko/Model-Informed-Flow)\]  
 **Joohwan Ko**, Justin Domke  
 *NeurIPS 2025*
 
-**[Latent Target Score Matching, with an Application to Simulation-Based Inference](https://joohwanko.com/files/Nips_MLPS.pdf)**  
+**Latent Target Score Matching, with an Application to Simulation-Based Inference** \[[pdf](https://joohwanko.com/files/Nips_MLPS.pdf)\]  
 **Joohwan Ko**, Tomas Geffner  
 *NeurIPS MLPS Workshop, 2025*
 
-**[Learning to Scale Logits for Temperature-Conditional GFlowNets](https://arxiv.org/pdf/2310.02823.pdf)**  
+**Learning to Scale Logits for Temperature-Conditional GFlowNets** \[[pdf](https://arxiv.org/pdf/2310.02823.pdf), [code](https://github.com/dbsxodud-11/logit-gfn)\]  
 Minsu Kim\*, **Joohwan Ko**\*, Taeyoung Yun\*, Dinghuai Zhang, Ling Pan, Woo Chang Kim, Jinkyoo Park, Emmanuel Bengio, Yoshua Bengio  
 *ICML 2024*
 
-**[Provably Scalable Black-Box Variational Inference with Structured Variational Families](https://arxiv.org/pdf/2401.10989)**  
+**Provably Scalable Black-Box Variational Inference with Structured Variational Families** \[[pdf](https://arxiv.org/pdf/2401.10989)\]  
 **Joohwan Ko**\*, Kyurae Kim\*, Woo Chang Kim, Jacob R. Gardner  
 *ICML 2024*
 
