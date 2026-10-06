@@ -19,7 +19,7 @@ Prior to joining UMass, I completed my Master's at KAIST and earned my undergrad
 
 **[SoftServe: A Scalable Quasi-Newton Method for Deep Learning](https://arxiv.org/pdf/2610.02182)**  
 **Joohwan Ko**, Tetiana Parshakova, Diana Cai, Robert M. Gower  
-*Preprint, 2026*
+*Preprint, 2026* · [Blog post](/softserve/)
 
 **[Amortized Factor Inference Networks for Posterior Inference](https://arxiv.org/pdf/2605.26419)**  
 **Joohwan Ko**, Justin Domke  

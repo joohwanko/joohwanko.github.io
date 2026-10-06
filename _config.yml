@@ -12,7 +12,7 @@ title                    : "Joohwan Ko"
 title_separator          : "-"
 name                     : &name "Joohwan Ko"
 description              : &description "personal description"
-url                      : https://joohwanko.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url                      : https://joohwanko.com # the base hostname & protocol for your site
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "joohwanko/joohwanko.github.io"
 
