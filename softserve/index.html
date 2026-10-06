@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SoftServe brings structured quasi-Newton updates to deep learning. Explore the soft secant constraint, try an interactive metric update, and see the paper's experiments.">
+  <meta name="description" content="How can changes in gradients help train neural networks? Explore how SoftServe learns structured inverse-Hessian approximations, with an interactive update and experiments.">
   <meta name="theme-color" content="#faf9f6">
   <meta property="og:title" content="SoftServe — A scalable quasi-Newton method for deep learning">
-  <meta property="og:description" content="Relax the secant constraint. Learn structured curvature. Scale with matrix multiplications. An interactive research note.">
+  <meta property="og:description" content="From changes in gradients to structured quasi-Newton updates. An interactive guide to SoftServe and its experiments.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://joohwanko.com/softserve/">
   <link rel="canonical" href="https://joohwanko.com/softserve/">
@@ -49,15 +49,15 @@
     <section class="hero section" id="top" aria-labelledby="hero-title">
       <h1 id="hero-title">SoftServe<img class="hero-icon" src="assets/softserve.svg" width="64" height="76" alt=""></h1>
       <p class="hero-title">A scalable quasi-Newton method<br class="desktop-break"> for deep learning.</p>
-      <p class="hero-deck">Curvature is useful. Hard constraints can get in the way.<br class="desktop-break"> We learn a structured inverse-curvature estimate by making the secant equation <em>soft</em>.</p>
+      <p class="hero-deck">Gradients describe the local slope of the loss. Changes in gradients also provide information about its curvature. SoftServe uses these changes to learn a structured inverse-Hessian approximation and precondition neural-network updates.</p>
       <p class="authors"><a href="https://joohwanko.com/">Joohwan Ko</a><span aria-hidden="true">·</span><a href="https://parshakova.github.io/">Tetiana Parshakova</a><span aria-hidden="true">·</span><a href="https://www.dianacai.com/">Diana Cai</a><span aria-hidden="true">·</span><a href="https://gowerrobert.github.io/">Robert M. Gower</a></p>
       <div class="hero-actions">
         <a class="button button-primary" href="https://arxiv.org/abs/2610.02182" target="_blank" rel="noopener">Read the paper <span>↗</span></a>
         <a class="button button-secondary" href="https://github.com/joohwanko/SoftServe" target="_blank" rel="noopener">Get the code <span>↗</span></a>
       </div>
       <div class="hero-summary">
-        <div><span class="summary-number">01</span><span>Learn from<br><strong>secant pairs</strong></span></div>
-        <div><span class="summary-number">02</span><span>Keep curvature<br><strong>positive definite</strong></span></div>
+        <div><span class="summary-number">01</span><span>Learn from<br><strong>gradient changes</strong></span></div>
+        <div><span class="summary-number">02</span><span>Maintain a<br><strong>positive-definite estimate</strong></span></div>
         <div><span class="summary-number">03</span><span>Scale with<br><strong>structured matrices</strong></span></div>
       </div>
     </section>
@@ -69,13 +69,12 @@
           <nav class="outline-nav" aria-label="On this page">
             <ol>
               <li><a href="#overview" aria-current="location"><span class="outline-number" aria-hidden="true">—</span><span>Overview</span></a></li>
-              <li><a href="#idea"><span class="outline-number" aria-hidden="true">01</span><span>The soft secant idea</span></a></li>
+              <li><a href="#idea"><span class="outline-number" aria-hidden="true">01</span><span>Learning curvature</span></a></li>
               <li><a href="#playground"><span class="outline-number" aria-hidden="true">02</span><span>Explore the update</span></a></li>
               <li><a href="#structure"><span class="outline-number" aria-hidden="true">03</span><span>Diag and Kron</span></a></li>
               <li><a href="#implementation"><span class="outline-number" aria-hidden="true">04</span><span>The training loop</span></a></li>
               <li><a href="#results"><span class="outline-number" aria-hidden="true">05</span><span>Experiments</span></a></li>
-              <li><a href="#limits"><span class="outline-number" aria-hidden="true">06</span><span>Limitations</span></a></li>
-              <li><a href="#try-it"><span class="outline-number" aria-hidden="true">07</span><span>Use SoftServe</span></a></li>
+              <li><a href="#try-it"><span class="outline-number" aria-hidden="true">06</span><span>Use SoftServe</span></a></li>
               <li><a href="#references"><span class="outline-number" aria-hidden="true">↗</span><span>References &amp; citation</span></a></li>
             </ol>
             <a class="outline-top" href="#top">Back to top ↑</a>
@@ -88,35 +87,39 @@
       <div class="prose">
         <div class="takeaway">
           <h2 id="overview-heading" class="overview-heading">The idea in brief</h2>
-          <p>SoftServe learns how to reshape an update, not just its step size. It fits diagonal or Kronecker-factored matrices to observed changes in gradients. A soft constraint handles incompatible curvature observations; Newton–Schulz iterations make the matrix calculations GPU-friendly.</p>
-          <p class="takeaway-last">The experiments span a small RNN, an autoencoder, PINNs, and a <strong>136M-parameter physics-informed diffusion model</strong>. The gains are substantial on several tasks—but do not carry over to matching Muon and SOAP on our language model.</p>
+          <p>Quasi-Newton methods estimate curvature from parameter and gradient changes, without forming a Hessian. For deep learning, we want that estimate to stay positive definite even when the loss has negative curvature—and small enough to store for a large network.</p>
+          <p>Soft quasi-Newton (Soft-QN) handles negative curvature by fitting the observed changes with a penalty rather than an exact constraint <a class="ref" href="#ref-softqn" aria-label="Reference 1">[1]</a>. SoftServe makes this formulation scalable: we derive diagonal and Kronecker-factored updates from the same objective, evaluated with GPU-friendly matrix multiplications.</p>
+          <p class="takeaway-last">Our experiments span a recurrent network, an autoencoder, physics-informed neural networks (PINNs), and a <strong>136M-parameter physics-informed diffusion model</strong>.</p>
         </div>
       </div>
     </section>
 
     <section class="section" id="idea">
       <div class="prose">
-        <p class="section-kicker">01 / The soft secant idea</p>
-        <h2>Learn curvature without<br>requiring an exact secant fit.</h2>
-        <p>A single learning rate treats all parameter directions alike. When the loss is much steeper in some directions than others, this can make optimization slow. A quasi-Newton method instead maintains a matrix <span class="inline-math" data-tex="H">H</span> that approximates inverse curvature and uses it to reshape the gradient.</p>
+        <p class="section-kicker">01 / Learning curvature</p>
+        <h2>From gradient changes<br>to curvature.</h2>
+        <p>When curvature varies across directions, a step size small enough for one direction can be unnecessarily small for another. A quasi-Newton method learns an inverse-Hessian approximation <span class="inline-math" data-tex="H">H</span>. Multiplying by this matrix rescales and mixes the gradient components before the update:</p>
         <div class="equation" data-tex="x^{+}=x-\eta H g">x⁺ = x − ηHg</div>
-        <p class="equation-note">Here <span class="inline-math" data-tex="x">x</span> is the parameter vector, <span class="inline-math" data-tex="g">g</span> its gradient, <span class="inline-math" data-tex="\eta">η</span> the learning rate, and <span class="inline-math" data-tex="H">H</span> a positive-definite inverse-Hessian estimate. Momentum and update normalization enter the practical optimizer later.</p>
+        <p class="equation-note">Here <span class="inline-math" data-tex="x">x</span> is the parameter vector, <span class="inline-math" data-tex="g=\nabla f(x)">g = ∇f(x)</span> the gradient of the loss <span class="inline-math" data-tex="f">f</span>, and <span class="inline-math" data-tex="\eta>0">η &gt; 0</span> the learning rate. Applying <span class="inline-math" data-tex="H">H</span> is called <em>preconditioning</em>.</p>
+        <p>We require <span class="inline-math" data-tex="H">H</span> to be positive definite, so <span class="inline-math" data-tex="g^\top Hg>0">gᵀHg &gt; 0</span> for every nonzero gradient. This makes <span class="inline-math" data-tex="-Hg">−Hg</span> a local descent direction. How can we learn such a matrix without computing the Hessian?</p>
         <h3 class="subheading">What a secant pair tells us</h3>
-        <p>We do not need to form a Hessian to learn about curvature. Take two parameter points. Let <span class="inline-math" data-tex="s=x_{\mathrm{new}}-x_{\mathrm{old}}">s = x_new − x_old</span> be their displacement and <span class="inline-math" data-tex="y=g_{\mathrm{new}}-g_{\mathrm{old}}">y = g_new − g_old</span> the change in gradient. Classical quasi-Newton methods ask the next estimate to satisfy the <em>secant equation</em>:</p>
+        <p>Evaluate the same loss at two parameter points. Their displacement <span class="inline-math" data-tex="s=x_{\mathrm{new}}-x_{\mathrm{old}}">s = x_new − x_old</span> and gradient change <span class="inline-math" data-tex="y=g_{\mathrm{new}}-g_{\mathrm{old}}">y = g_new − g_old</span> form a <em>secant pair</em>.</p>
+        <p>For a smooth loss and nearby points, <span class="inline-math" data-tex="y\approx\nabla^2 f(x_{\mathrm{old}})s">y ≈ ∇²f(x_old)s</span>, where <span class="inline-math" data-tex="\nabla^2 f">∇²f</span> is the Hessian, the matrix of second derivatives. An inverse estimate should therefore map <span class="inline-math" data-tex="y">y</span> back to <span class="inline-math" data-tex="s">s</span>. Classical methods such as BFGS impose this as the <em>secant equation</em>:</p>
         <div class="equation equation-compact" data-tex="H_{\mathrm{new}}y=s.">H_new y = s.</div>
-        <p>There is a catch. If <span class="inline-math" data-tex="H">H</span> is positive definite and <span class="inline-math" data-tex="y">y</span> is nonzero, then <span class="inline-math" data-tex="y^\top H y>0">yᵀHy &gt; 0</span>. A perfect secant fit therefore requires <span class="inline-math" data-tex="s^\top y>0">sᵀy &gt; 0</span>. Non-convexity and stochastic gradients need not give us such a pair.</p>
+        <p>But these two requirements can conflict. A positive-definite <span class="inline-math" data-tex="H_{\mathrm{new}}">H_new</span> satisfying the equation requires <span class="inline-math" data-tex="s^\top y>0">sᵀy &gt; 0</span> when <span class="inline-math" data-tex="y\ne0">y ≠ 0</span>. Nonconvex losses can violate this condition. In stochastic training, an exact fit also reflects only one sampled loss.</p>
         <h3 class="subheading">Replace the constraint with a penalty</h3>
-        <p>The soft quasi-Newton objective of Berglund, Zhang, and Johansson <a class="ref" href="#ref-softqn" aria-label="Reference 1">[1]</a> fits the secant equation without requiring equality:</p>
+        <p>Soft-QN <a class="ref" href="#ref-softqn" aria-label="Reference 1">[1]</a> allows an imperfect fit. Starting from a positive-definite estimate <span class="inline-math" data-tex="H_{\mathrm{old}}">H_old</span>, it balances fitting the pair against changing that estimate:</p>
         <div class="objective-box">
-          <span class="small-label">One objective, two competing goals</span>
+          <span class="small-label">The Soft-QN variational objective</span>
           <div class="equation" data-tex="H_{\mathrm{new}}=\underset{H\succ0}{\arg\min}\;\underbrace{\|s-Hy\|_{H^{-1}}^2}_{\text{fit the secant}}\;+\;\frac{1}{\lambda}\underbrace{D_{\mathrm{ld}}(H_{\mathrm{old}},H)}_{\text{stay close to the old metric}}">H_new = argmin over H ≻ 0: ‖s − Hy‖²_H⁻¹ + D_ld(H_old, H) / λ</div>
         </div>
-        <p>A small <span class="inline-math" data-tex="\lambda">λ</span> favors the previous estimate. A larger <span class="inline-math" data-tex="\lambda">λ</span> puts more emphasis on the new pair. Crucially, the exact solution stays positive definite even when the pair is incompatible with an exact secant fit.</p>
+        <p>The first term penalizes the secant mismatch. The log-determinant divergence <span class="inline-math" data-tex="D_{\mathrm{ld}}">D_ld</span> measures the change from the previous estimate. The parameter <span class="inline-math" data-tex="\lambda>0">λ &gt; 0</span> sets the tradeoff: small values favor the old estimate; large values emphasize the new pair.</p>
+        <p>Unlike the exact constraint, this objective has a unique positive-definite minimizer for every finite pair, including negative-curvature pairs.</p>
         <details class="technical-detail">
           <summary>What do the norm and divergence mean?</summary>
-          <p>The weighted norm is <span class="inline-math" data-tex="\|v\|_{H^{-1}}^2=v^\top H^{-1}v">‖v‖²_H⁻¹ = vᵀH⁻¹v</span>. For <span class="inline-math" data-tex="d">d</span>-dimensional matrices, the log-determinant divergence is</p>
+          <p>For a vector <span class="inline-math" data-tex="v">v</span>, the weighted norm is <span class="inline-math" data-tex="\|v\|_{H^{-1}}^2=v^\top H^{-1}v">‖v‖²_H⁻¹ = vᵀH⁻¹v</span>. For positive-definite <span class="inline-math" data-tex="d\times d">d × d</span> matrices, the log-determinant divergence is</p>
           <div class="equation" data-tex="D_{\mathrm{ld}}(H_{\mathrm{old}},H)=\operatorname{tr}(H^{-1}H_{\mathrm{old}})-\log\det(H^{-1}H_{\mathrm{old}})-d.">D_ld = tr(H⁻¹H_old) − log det(H⁻¹H_old) − d.</div>
-          <p>It is nonnegative and vanishes when the matrices agree. It is also twice the KL divergence from <span class="inline-math" data-tex="\mathcal N(0,H_{\mathrm{old}})">N(0, H_old)</span> to <span class="inline-math" data-tex="\mathcal N(0,H)">N(0, H)</span>. This links the update to a variational view of curvature fitting; related matrix equations also arise in <em>Batch and Match</em> <a class="ref" href="#ref-bam">[2]</a>.</p>
+          <p>It is nonnegative and vanishes only when the matrices agree. It equals twice the Kullback–Leibler divergence from the Gaussian <span class="inline-math" data-tex="\mathcal N(0,H_{\mathrm{old}})">N(0, H_old)</span> to <span class="inline-math" data-tex="\mathcal N(0,H)">N(0, H)</span>. Related matrix equations arise in the variational-inference method <em>Batch and Match</em> <a class="ref" href="#ref-bam">[2]</a>.</p>
         </details>
       </div>
     </section>
@@ -124,11 +127,11 @@
     <section class="section playground-section" id="playground">
       <div class="prose">
         <p class="section-kicker">02 / Explore the update</p>
-        <h2>One pair.<br>A changing metric.</h2>
-        <p>Start with <span class="inline-math" data-tex="H_{\mathrm{old}}=I">H_old = I</span> and fix the displacement <span class="inline-math" data-tex="s">s</span>. Move the gradient-change vector <span class="inline-math" data-tex="y">y</span> from agreeing with <span class="inline-math" data-tex="s">s</span> to opposing it. Then change <span class="inline-math" data-tex="\lambda">λ</span> to see how much the new metric adapts.</p>
+        <h2>A two-dimensional<br>Soft-QN update.</h2>
+        <p>Start from the identity estimate <span class="inline-math" data-tex="H_{\mathrm{old}}=I">H_old = I</span>. Rotate <span class="inline-math" data-tex="y">y</span> relative to <span class="inline-math" data-tex="s">s</span>, then vary <span class="inline-math" data-tex="\lambda">λ</span>. The orange arrow is <span class="inline-math" data-tex="H_{\mathrm{new}}y">H_new y</span>; compare it with the green target <span class="inline-math" data-tex="s">s</span> to see how closely the secant equation is fitted.</p>
       </div>
       <div class="interactive-panel">
-        <div class="interactive-topline"><span class="small-label">The soft secant playground</span><span class="demo-tag">Illustration · exact 2D update</span></div>
+        <div class="interactive-topline"><span class="small-label">Dense Soft-QN</span><span class="demo-tag">Illustration · exact 2D update</span></div>
         <div class="playground-grid">
           <div class="metric-visual">
             <div class="chart-annotations"><span class="inline-math" data-tex="z^\top H^{-1}z=1">zᵀH⁻¹z = 1</span><span><span class="inline-math" data-tex="H">H</span> remains positive definite</span></div>
@@ -142,12 +145,12 @@
             <div class="control">
               <label for="lambda-slider">Secant penalty <span class="control-value"><span class="inline-math" data-tex="\lambda=">λ =</span> <output id="lambda-value" for="lambda-slider">10</output></span></label>
               <input id="lambda-slider" type="range" min="-2" max="2" step="0.01" value="1" aria-label="Logarithmic secant penalty lambda">
-              <div class="range-ends"><span>0.01 · keep the old metric</span><span>100 · fit the pair</span></div>
+              <div class="range-ends"><span>0.01 · stronger regularization</span><span>100 · stronger secant penalty</span></div>
             </div>
             <div class="control">
               <label for="angle-slider"><span>Angle between <span class="inline-math" data-tex="s">s</span> and <span class="inline-math" data-tex="y">y</span></span><span class="control-value"><output id="angle-value" for="angle-slider">35</output>°</span></label>
               <input id="angle-slider" type="range" min="0" max="180" step="1" value="35">
-              <div class="range-ends"><span>Agreeing</span><span>Opposing</span></div>
+              <div class="range-ends"><span>Aligned</span><span>Opposite</span></div>
             </div>
             <div class="preset-buttons" role="group" aria-label="Secant pair examples">
               <button type="button" data-angle="35">Positive</button>
@@ -166,13 +169,13 @@
             </div>
           </div>
         </div>
-        <p class="interactive-footnote">The ellipses are <span class="inline-math" data-tex="z^\top H^{-1}z=1">zᵀH⁻¹z = 1</span>, not loss contours. Axes rescale together to keep the new ellipse visible. This is a single dense Soft-QN update, not a training benchmark or a full SoftServe-Kron run.</p>
+        <p class="interactive-footnote">For a 2D coordinate <span class="inline-math" data-tex="z">z</span>, each ellipse satisfies <span class="inline-math" data-tex="z^\top H^{-1}z=1">zᵀH⁻¹z = 1</span>; it is not a loss contour. Both axes rescale together. This illustrates one dense Soft-QN update, not a SoftServe-Kron training run.</p>
       </div>
       <div class="prose after-panel">
-        <p><strong>Try the negative pair, then increase <span class="inline-math" data-tex="\lambda">λ</span>.</strong> No positive-definite matrix can fit <span class="inline-math" data-tex="Hy=s">Hy = s</span> exactly when <span class="inline-math" data-tex="s^\top y">sᵀy</span> is negative. The residual cannot vanish, but the soft update still gives a positive-definite metric.</p>
+        <p><strong>Try the negative pair, then increase <span class="inline-math" data-tex="\lambda">λ</span>.</strong> When <span class="inline-math" data-tex="s^\top y<0">sᵀy &lt; 0</span>, no positive-definite matrix can map <span class="inline-math" data-tex="y">y</span> exactly to <span class="inline-math" data-tex="s">s</span>. The residual stays nonzero, but the smallest eigenvalue remains positive: the fit is relaxed, not the definiteness requirement.</p>
         <details class="technical-detail">
           <summary>The calculation behind the animation</summary>
-          <p>We use <span class="inline-math" data-tex="s=(1,0)">s = (1, 0)</span>, <span class="inline-math" data-tex="y=(\cos\theta,\sin\theta)">y = (cos θ, sin θ)</span>, and <span class="inline-math" data-tex="H_{\mathrm{old}}=I">H_old = I</span>. Let <span class="inline-math" data-tex="V=I+\lambda ss^\top">V = I + λssᵀ</span> and <span class="inline-math" data-tex="b=y^\top Vy">b = yᵀVy</span>. The exact dense solution is</p>
+          <p>With slider angle <span class="inline-math" data-tex="\theta">θ</span>, we use <span class="inline-math" data-tex="s=(1,0)^\top">s = (1, 0)ᵀ</span>, <span class="inline-math" data-tex="y=(\cos\theta,\sin\theta)^\top">y = (cos θ, sin θ)ᵀ</span>, and <span class="inline-math" data-tex="H_{\mathrm{old}}=I">H_old = I</span>. Let <span class="inline-math" data-tex="V=I+\lambda ss^\top">V = I + λssᵀ</span> and <span class="inline-math" data-tex="b=y^\top Vy">b = yᵀVy</span>. The exact dense solution is</p>
           <div class="equation" data-tex="H_{\mathrm{new}}=V-\frac{4\lambda}{(1+\sqrt{1+4\lambda b})^2}(Vy)(Vy)^\top.">H_new = V − 4λ (Vy)(Vy)ᵀ / (1 + √(1 + 4λb))².</div>
           <p>It satisfies <span class="inline-math" data-tex="\lambda Hyy^\top H+H=V">λHyyᵀH + H = V</span>. The displayed residual is <span class="inline-math" data-tex="\|s-Hy\|_2/\|s\|_2">‖s − Hy‖₂ / ‖s‖₂</span>. These browser calculations are independent of the paper’s experimental measurements.</p>
         </details>
@@ -182,21 +185,21 @@
     <section class="section" id="structure">
       <div class="prose">
         <p class="section-kicker">03 / Diag and Kron</p>
-        <h2>Put the structure<br>inside the objective.</h2>
-        <p>The dense soft-QN update is still too large for a neural network. SoftServe optimizes the same objective <em>within a structured family</em>, rather than computing a dense update and compressing it afterward.</p>
+        <h2>Keep the objective.<br>Structure the matrix.</h2>
+        <p>Soft-QN resolves the curvature-sign problem, but a dense estimate for <span class="inline-math" data-tex="d">d</span> parameters still stores <span class="inline-math" data-tex="d^2">d²</span> entries. SoftServe restricts the same objective to smaller matrix families and derives their updates directly.</p>
         <div class="method-pair">
           <div>
             <h3>SoftServe-Diag</h3>
-            <p>One positive value per parameter. The objective separates into scalar problems, each with a closed-form solution.</p>
+            <p>The diagonal stores one positive scale <span class="inline-math" data-tex="h_i">h_i</span> per parameter. Each scale has a closed-form update, since the objective separates across entries.</p>
             <div class="equation equation-compact" data-tex="H=\operatorname{diag}(h),\qquad h_i>0">H = diag(h), hᵢ &gt; 0</div>
           </div>
           <div>
             <h3>SoftServe-Kron</h3>
-            <p>Two positive-definite factors per weight matrix. They capture interactions between rows and between columns.</p>
+            <p>Two positive-definite factors act on the rows and columns of each weight-matrix block. This retains interactions between parameters without storing the full matrix:</p>
             <div class="equation equation-compact" data-tex="H=L\otimes R,\qquad Hg=\operatorname{vec}(RGL)">H = L ⊗ R, Hg = vec(RGL)</div>
           </div>
         </div>
-        <p>For a weight matrix <span class="inline-math" data-tex="X\in\mathbb R^{n\times m}">X ∈ ℝⁿˣᵐ</span>, <span class="inline-math" data-tex="G">G</span> is its matrix gradient, <span class="inline-math" data-tex="R">R</span> is <span class="inline-math" data-tex="n\times n">n × n</span>, and <span class="inline-math" data-tex="L">L</span> is <span class="inline-math" data-tex="m\times m">m × m</span>. The full inverse-curvature matrix would have <span class="inline-math" data-tex="(nm)^2">(nm)²</span> entries. Kron stores only <span class="inline-math" data-tex="n^2+m^2">n² + m²</span>.</p>
+        <p>Here <span class="inline-math" data-tex="\otimes">⊗</span> denotes the Kronecker product. For a block <span class="inline-math" data-tex="X\in\mathbb R^{n\times m}">X ∈ ℝⁿˣᵐ</span>, <span class="inline-math" data-tex="G">G</span> is its gradient and <span class="inline-math" data-tex="g=\operatorname{vec}(G)">g = vec(G)</span> stacks its columns into a vector. The factors <span class="inline-math" data-tex="R">R</span> and <span class="inline-math" data-tex="L">L</span> are <span class="inline-math" data-tex="n\times n">n × n</span> and <span class="inline-math" data-tex="m\times m">m × m</span>. We compute <span class="inline-math" data-tex="RGL">RGL</span> directly, storing <span class="inline-math" data-tex="n^2+m^2">n² + m²</span> entries instead of <span class="inline-math" data-tex="(nm)^2">(nm)²</span>.</p>
       </div>
       <div class="storage-panel">
         <div class="storage-heading">
@@ -212,33 +215,35 @@
       </div>
       <div class="prose after-panel">
         <h3 class="subheading">Update one factor at a time</h3>
-        <p>The two Kron factors are coupled, so we update them alternately. Each exact factor solve has a unique positive-definite solution and cannot increase the curvature-fitting objective. One sweep is not a joint global solve—and decreasing this fitting objective is not a guarantee that the training loss decreases.</p>
+        <p>Each factor depends on the other, so we update one while holding the other fixed, then switch. Each exact solve has a unique positive-definite solution and cannot increase the curvature-fitting objective. One alternating sweep does not jointly minimize both factors or guarantee a decrease in training loss.</p>
       </div>
     </section>
 
     <section class="section" id="implementation">
       <div class="prose">
         <p class="section-kicker">04 / The training loop</p>
-        <h2>Use the metric every step.<br>Refresh it occasionally.</h2>
+        <h2>How it fits into<br>a training loop.</h2>
         <h3 class="subheading">1. Apply the current metric</h3>
-        <p><span class="inline-math" data-tex="H">H</span> acts on a momentum direction <span class="inline-math" data-tex="m">m</span>. We normalize the update in the learned metric, then take a step with learning rate <span class="inline-math" data-tex="\eta">η</span>:</p>
+        <p>At each step, form a momentum-filtered gradient <span class="inline-math" data-tex="m">m</span> for each parameter block. Apply the current estimate <span class="inline-math" data-tex="H">H</span>, then normalize the resulting direction:</p>
         <div class="equation equation-compact" data-tex="d=\frac{Hm}{\sqrt{m^\top Hm}},\qquad x^{+}=x-\eta d.">d = Hm / √(mᵀHm), x⁺ = x − ηd.</div>
-        <p>The update is zero when <span class="inline-math" data-tex="m">m</span> is zero. With <span class="inline-math" data-tex="H=I">H = I</span>, this gives our <strong>SoftServe-I</strong> control: the same normalized momentum update without a learned metric.</p>
+        <p>The denominator gives <span class="inline-math" data-tex="d">d</span> unit length in the <span class="inline-math" data-tex="H^{-1}">H⁻¹</span> norm: <span class="inline-math" data-tex="d^\top H^{-1}d=1">dᵀH⁻¹d = 1</span>. A zero momentum gives no update. Setting <span class="inline-math" data-tex="H=I">H = I</span> gives our <strong>SoftServe-I</strong> control, which keeps normalized momentum but removes curvature learning.</p>
         <h3 class="subheading">2. Form a secant pair every <span class="inline-math" data-tex="K">K</span> updates</h3>
-        <p>Curvature is refreshed every <span class="inline-math" data-tex="K">K</span> parameter updates. In stochastic training, both endpoint gradients must use the <em>same batch and randomness</em>; otherwise their difference mixes parameter movement with a change in the objective.</p>
+        <p>We keep the estimate fixed for <span class="inline-math" data-tex="K">K</span> updates to reduce refresh cost. To measure curvature rather than a change of minibatch, both secant gradients use the <em>same batch and randomness</em>. Intermediate training steps can still use fresh batches.</p>
         <div class="replay-strip">
           <div class="replay-title"><span class="small-label">Default <span class="inline-math" data-tex="K=10">K = 10</span></span><span>10 training gradients + 1 replay</span></div>
           <div class="replay-cells" aria-label="Ten parameter updates followed by one same-batch replay"><span class="origin-cell">1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span class="replay-cell">↶</span></div>
-          <p>Save the starting batch and gradient. After ten updates, replay that batch to form the secant pair and refresh the metric.</p>
+          <p>Save the starting parameters, gradient, batch, and random state. After ten updates, replay the saved loss at the new parameters to form the secant pair.</p>
         </div>
-        <p>This adds about 10% more gradient evaluations, not necessarily 10% more runtime: factor updates also take time. For a deterministic objective, gradients already available from training can supply the endpoints.</p>
+        <p>At <span class="inline-math" data-tex="K=10">K = 10</span>, replay adds 10% more gradient evaluations; factor computations add separate runtime. Deterministic training can reuse its endpoint gradients without an extra evaluation.</p>
         <h3 class="subheading">3. Refresh the factors with matrix multiplications</h3>
-        <p>Each factor solve reduces to a quadratic matrix equation:</p>
+        <p>Once we have a secant pair, refreshing a Kronecker factor means solving for a positive-definite matrix <span class="inline-math" data-tex="Q">Q</span>:</p>
         <div class="equation equation-compact" data-tex="QUQ+Q=V,\qquad U\succeq0,\quad V\succ0.">QUQ + Q = V, U ⪰ 0, V ≻ 0.</div>
-        <p><span class="inline-math" data-tex="Q">Q</span> is the factor being updated; <span class="inline-math" data-tex="U">U</span> and <span class="inline-math" data-tex="V">V</span> combine the secant pair with the current metric. The solution involves matrix square roots and inverses. Our Gram formulation exploits <span class="inline-math" data-tex="U=FF^\top">U = FFᵀ</span>, and coupled Newton–Schulz iterations approximate the required matrix functions using matrix multiplications and additions.</p>
+        <p>This is a <em>quadratic matrix equation</em>. The secant pair and current factors determine its coefficients: <span class="inline-math" data-tex="U">U</span> is positive semidefinite and <span class="inline-math" data-tex="V">V</span> is positive definite. These conditions give a unique positive-definite solution.</p>
+        <p>The solution involves matrix square roots and inverses. We approximate them with Newton–Schulz iterations, which use repeated matrix multiplications and additions. This makes the factor solves suitable for GPUs without requiring matrix decompositions.</p>
         <details class="technical-detail">
           <summary>Numerical solver settings</summary>
-          <p>The experimental default uses 18 coupled root iterations and 10 inverse iterations. These are finite-precision approximations, not exact factor solves, so numerical residual and validity checks remain important. See the paper for the Gram formulation and iteration-count ablations.</p>
+          <p>Our Gram formulation writes <span class="inline-math" data-tex="U=FF^\top">U = FFᵀ</span>, with Gram factor <span class="inline-math" data-tex="F">F</span>, and avoids a separate square root of <span class="inline-math" data-tex="V">V</span>. Coupled Newton–Schulz jointly approximates square and inverse square roots; another Newton–Schulz iteration approximates inverses.</p>
+          <p>The default uses 18 coupled root iterations and 10 inverse iterations. These approximate the exact factor solves; the paper reports their numerical residuals and the effect of iteration count on training.</p>
         </details>
       </div>
     </section>
@@ -247,7 +252,7 @@
       <div class="prose">
         <p class="section-kicker">05 / Experiments</p>
         <h2>From recurrent networks<br>to physics-informed diffusion.</h2>
-        <p>We tune each method’s learning rate separately, then evaluate the selected configurations on three fresh seeds. The main comparison matches <strong>gradient evaluations</strong>, including secant replays, line searches, and loss-balancing gradients.</p>
+        <p>Does the learned curvature improve training? We tune each method’s learning rate separately, then compare the selected configurations on three fresh seeds. The plots match <strong>gradient evaluations</strong>, counting secant replays, line searches, and loss-balancing gradients as well as ordinary training gradients.</p>
       </div>
       <div class="results-tabs" role="tablist" aria-label="Experiment families">
         <button type="button" role="tab" id="tab-sequence" aria-controls="result-sequence" aria-selected="true" tabindex="0">RNN &amp; autoencoder</button>
@@ -255,10 +260,10 @@
         <button type="button" role="tab" id="tab-large" aria-controls="result-large" aria-selected="false" tabindex="-1">PirateNet &amp; diffusion</button>
       </div>
       <div id="result-sequence" class="result-panel" role="tabpanel" aria-labelledby="tab-sequence" tabindex="0">
-        <div class="result-heading"><h3>Memory across time. Compression across layers.</h3><span class="small-label">321 → 2.8M parameters</span></div>
+        <div class="result-heading"><h3>RNN Adding and MNIST autoencoding</h3><span class="small-label">321 → 2.8M parameters</span></div>
         <figure>
           <button class="figure-button" data-figure="assets/figures/main_rnn_autoencoder.svg" data-pdf="assets/figures/main_rnn_autoencoder.pdf" aria-label="Enlarge RNN Adding and MNIST optimization plots"><img src="assets/figures/main_rnn_autoencoder.svg" alt="Training curves for RNN Adding, full-batch MNIST autoencoding, and minibatch MNIST autoencoding. Kron is best on Adding and full-batch MNIST and close to Muon on minibatch MNIST." width="1200" height="410" loading="lazy"><span class="zoom-hint">Expand ↗</span></button>
-          <figcaption><strong>RNN Adding and MNIST reconstruction.</strong> Left: a tanh RNN predicts the sum of two marked values in a length-100 sequence. Middle and right: a deep autoencoder reconstructs MNIST images through a 30-dimensional code. Objectives are prediction MSE and regularized reconstruction BCE. <a href="assets/figures/main_rnn_autoencoder.pdf" target="_blank" rel="noopener">Original PDF ↗</a></figcaption>
+          <figcaption><strong>RNN Adding and MNIST reconstruction.</strong> Left: a recurrent neural network with tanh activations retains two marked values in a length-100 sequence and predicts their sum, minimizing mean squared error (MSE). Middle and right: a deep autoencoder compresses MNIST images into a 30-dimensional code and reconstructs them, minimizing regularized binary cross-entropy.</figcaption>
         </figure>
         <p class="result-note">On Adding, Kron’s mean test MSE is <span class="inline-math" data-tex="6.6\times10^{-6}">6.6 × 10⁻⁶</span>, compared with <span class="inline-math" data-tex="1.5\times10^{-4}">1.5 × 10⁻⁴</span> for Muon and <span class="inline-math" data-tex="1.0\times10^{-2}">1.0 × 10⁻²</span> for the identity-metric control. On MNIST, Kron reaches the lowest full-batch training objective and is close to Muon with minibatches.</p>
       </div>
@@ -266,7 +271,7 @@
         <div class="result-heading"><h3>Three PDEs, two sampling regimes</h3><span class="small-label">81,201 parameters</span></div>
         <figure>
           <button class="figure-button" data-figure="assets/figures/main_pinn_gradients.svg" data-pdf="assets/figures/main_pinn_gradients.pdf" aria-label="Enlarge six small PINN optimization plots"><img src="assets/figures/main_pinn_gradients.svg" alt="Six PINN training-loss plots: Wave, Convection, and Reaction with deterministic and stochastic collocation. Kron has the lowest final objective in five settings; Adam plus L-BFGS is best on deterministic Wave." width="1200" height="730" loading="lazy"><span class="zoom-hint">Expand ↗</span></button>
-          <figcaption><strong>Small PINNs.</strong> Columns are Wave, Convection, and Reaction. The top row is deterministic; the bottom row resamples collocation points. Horizontal extensions retain the final loss after an L-BFGS run terminates. <a href="assets/figures/main_pinn_gradients.pdf" target="_blank" rel="noopener">Original PDF ↗</a></figcaption>
+          <figcaption><strong>Small PINNs.</strong> A neural network approximates each partial differential equation (PDE) solution by minimizing mean squared equation residuals and initial- and boundary-condition errors. Columns are Wave, Convection, and Reaction. Interior points stay fixed in the top row (deterministic) and are resampled in the bottom row (stochastic). Horizontal extensions retain the final loss after an L-BFGS run terminates.</figcaption>
         </figure>
         <p class="result-note">Kron achieves the lowest final training objective in five of six settings, including all three stochastic settings. Deterministic Wave is the exception: Adam and Adam + L-BFGS finish lower, with the combination best.</p>
       </div>
@@ -274,32 +279,18 @@
         <div class="result-heading"><h3>Larger physics-informed models</h3><span class="small-label">0.73M → 136M parameters</span></div>
         <figure>
           <button class="figure-button" data-figure="assets/figures/main_piratenet_pidm_gradients.svg" data-pdf="assets/figures/main_piratenet_pidm_gradients.pdf" aria-label="Enlarge PirateNet and physics-informed diffusion optimization plots"><img src="assets/figures/main_piratenet_pidm_gradients.svg" alt="Three optimization plots: PirateNet Allen–Cahn, PirateNet KdV, and a 136M-parameter physics-informed diffusion model. SoftServe-Kron is competitive on Allen–Cahn and has the lowest final mean loss on KdV and PIDM." width="1215" height="395" loading="lazy"><span class="zoom-hint">Expand ↗</span></button>
-          <figcaption><strong>PirateNet and PIDM.</strong> Left and middle: unweighted PDE and initial-condition MSE on fixed points; the adaptive training weights differ across methods. Right: the PIDM training objective on fixed examples and noise. Budgets are 300,600, 100,200, and 100,000 gradient evaluations, respectively. <a href="assets/figures/main_piratenet_pidm_gradients.pdf" target="_blank" rel="noopener">Original PDF ↗</a></figcaption>
+          <figcaption><strong>PirateNet and PIDM.</strong> Left and middle: PirateNet, a deeper PINN, solves Allen–Cahn and KdV. We compare unweighted PDE and initial-condition MSE on fixed points because adaptive training weights differ across methods. Right: a physics-informed diffusion model for structural design, evaluated on its combined denoising and mechanics objective with fixed examples and noise. Budgets are 300,600, 100,200, and 100,000 gradient evaluations, respectively.</figcaption>
         </figure>
         <p class="result-note">Kron is competitive with Muon on Allen–Cahn and has the lowest final mean loss on KdV. On the 136M-parameter U-Net for structural design, it also reaches a lower mean training objective than Adam, Muon, and SOAP at the matched budget.</p>
       </div>
-      <p class="figure-protocol">Original paper figures, not new experiments. Lines are three-seed arithmetic means; bands span seed minimum–maximum. Failed cohorts retain individual traces. The paper’s appendix reports solution/test errors and wall-clock comparisons.</p>
-    </section>
-
-    <section class="section" id="limits">
-      <div class="prose">
-        <p class="section-kicker">06 / Limitations</p>
-        <h2>Useful curvature is<br>not a universal win.</h2>
-        <p>A positive-definite estimate is a structural guarantee, not a promise of better optimization on every architecture. On our 16M-parameter GPT trained on 200M FineWeb tokens, Kron does not match Muon or SOAP.</p>
-        <div class="llm-results" aria-label="Mean validation NLL for the paper's language model">
-          <div><span>AdamW</span><strong>4.786</strong></div><div class="ours"><span>SoftServe-Kron</span><strong>4.661</strong></div><div><span>Muon</span><strong>4.440</strong></div><div><span>SOAP</span><strong>4.416</strong></div>
-        </div>
-        <p class="equation-note">Mean validation NLL, lower is better. These are the language-model results reported in the paper, not the physics-informed diffusion experiment.</p>
-        <p><span class="inline-math" data-tex="\lambda">λ</span> matters, and a larger value is not automatically better. We keep it fixed within each reported run. Adaptive penalties, numerical accuracy, refresh frequency, and understanding when structured secants improve training remain important directions.</p>
-        <p>The takeaway is specific: <strong>structured quasi-Newton updates can be practical and effective for deep learning</strong>, with particularly encouraging results on the recurrent and physics-informed tasks we tested.</p>
-      </div>
+      <p class="figure-protocol">Lines are three-seed arithmetic means; bands span the seed minimum–maximum. Settings with failed seeds retain individual traces. The paper’s appendix reports solution and test errors, along with wall-clock comparisons.</p>
     </section>
 
     <section class="section try-section" id="try-it">
       <div class="prose">
-        <p class="section-kicker">07 / Use SoftServe</p>
-        <h2>Your model.<br>A learned update geometry.</h2>
-        <p>The public PyTorch interface routes matrix weights to Kron and supports Adam, AdamW, or SoftServe-Diag for the remaining parameters. The README includes deterministic and stochastic training loops.</p>
+        <p class="section-kicker">06 / Use SoftServe</p>
+        <h2>Use SoftServe<br>in PyTorch.</h2>
+        <p>Pass your model to <code>SoftServeKron</code>. The optimizer routes matrix weights and convolution kernels to Kron, and uses your chosen fallback—Adam, AdamW, or SoftServe-Diag—for the remaining parameters.</p>
         <div class="code-block">
           <div class="code-header"><span>PyTorch · model-based API</span><button type="button" class="copy-button" data-copy="usage-code">Copy</button></div>
           <pre><code id="usage-code">from softserve import SoftServeKron
@@ -313,7 +304,7 @@ optimizer = SoftServeKron(
     fallback_lr=3e-4,
 )</code></pre>
         </div>
-        <p class="equation-note">An API example, not a universally tuned configuration. For stochastic training, use optimizer.step(closure) so both secant endpoints share the batch and randomness.</p>
+        <p class="equation-note">These are example hyperparameters, not universal defaults. For stochastic training, pass <code>optimizer.step(closure)</code> a function that recomputes the loss and gradients on its captured minibatch. The optimizer handles snapshots and replay.</p>
         <a class="text-link" href="https://github.com/joohwanko/SoftServe#examples" target="_blank" rel="noopener">See the complete training examples <span>↗</span></a>
       </div>
     </section>
@@ -350,11 +341,11 @@ optimizer = SoftServeKron(
   </main>
   <footer class="site-footer">
     <a class="wordmark" href="#top"><img src="assets/softserve.svg" width="25" height="30" alt="">SoftServe</a>
-    <span>A softer constraint. A structured update.</span>
+    <span>Structured quasi-Newton updates.</span>
     <div><a href="/">← Homepage</a><a href="https://arxiv.org/abs/2610.02182">Paper ↗</a><a href="https://github.com/joohwanko/SoftServe">Code ↗</a><a href="#citation">Cite</a></div>
   </footer>
   <dialog id="figure-dialog" aria-label="Expanded experiment figure">
-    <div class="dialog-toolbar"><a id="dialog-pdf" href="#">Open original PDF ↗</a><button id="close-figure" class="icon-button" type="button" aria-label="Close expanded figure">×</button></div>
+    <div class="dialog-toolbar"><button id="close-figure" class="icon-button" type="button" aria-label="Close expanded figure">×</button></div>
     <img id="dialog-image" alt="">
     <p>Scroll horizontally on a small screen to inspect the axes and legends.</p>
   </dialog>

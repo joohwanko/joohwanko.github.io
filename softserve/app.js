@@ -316,7 +316,6 @@
       opener = button;
       byId('dialog-image').src = button.dataset.figure;
       byId('dialog-image').alt = button.querySelector('img').alt;
-      byId('dialog-pdf').href = button.dataset.pdf;
       dialog.showModal();
       dialog.scrollLeft = 0;
       dialog.scrollTop = 0;
