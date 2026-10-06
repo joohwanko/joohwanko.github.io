@@ -29,7 +29,7 @@ Prior to joining UMass, I completed my Master's at KAIST and earned my undergrad
 **Joohwan Ko**, Justin Domke  
 *NeurIPS 2025*
 
-**Latent Target Score Matching, with an Application to Simulation-Based Inference** \[[pdf](https://joohwanko.com/files/Nips_MLPS.pdf)\]  
+**Latent Target Score Matching, with an Application to Simulation-Based Inference** \[[pdf](https://arxiv.org/pdf/2602.07189)\]  
 **Joohwan Ko**, Tomas Geffner  
 *NeurIPS MLPS Workshop, 2025*
 
